@@ -11,14 +11,17 @@ class FindCsvErrorsCommand(sublime_plugin.TextCommand):
   warning_info, warning_lines = [], []
 
   def run(self, edit):
-    # 
+    # If there are no cached errors
     if self.warning_info == []:
       # Get the contents of the page (this should be changed later to be optimized for large files)
       contents = self.view.substr(sublime.Region(0, self.view.size()))
       contents = [c + '\n' for c in contents.split('\n')]
+
+      # Get the warning info and lines
       self.warning_info, self.warning_lines = self.get_warnings(contents)
       sublime.set_clipboard('\n'.join(self.warning_info))
 
+    # Display a menu for jumping to the error lines
     sublime.active_window().show_quick_panel(self.warning_info, self.select_option)
 
 
