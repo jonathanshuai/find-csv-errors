@@ -7,6 +7,8 @@ import csv
 class FindCsvErrorsCommand(sublime_plugin.TextCommand):
   delimiter = ','
   text_qualifier = '"'
+  read_tag = "[seen]"
+  len_read_tag = len(read_tag)
 
   warning_info, warning_lines = [], []
 
@@ -84,4 +86,5 @@ class FindCsvErrorsCommand(sublime_plugin.TextCommand):
     # Go to line warning_line[index]
     else:
       self.view.run_command("goto_line", {"line": self.warning_lines[index]})
-      self.warning_info[index] +=  " [seen]" # Mark visited?
+      if self.warning_info[index][-self.len_read_tag:] != self.read_tag:
+        self.warning_info[index] +=  " " + self.read_tag # Mark visited?
