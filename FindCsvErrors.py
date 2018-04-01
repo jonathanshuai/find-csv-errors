@@ -88,14 +88,14 @@ class FindCsvErrorsCommand(sublime_plugin.TextCommand):
       error_log.set_scratch(True)
       error_log.set_name("error_log.txt")
       
-      for (line1, line2) in self.warning_lines:
-        region = self.get_region_at_line(line1, line2)
-        rows_to_write = self.view.substr(region) + "\n"
+      for i in range(len(self.warning_lines)):
+        # Make sure no line was duplicated (the current from_line != previous to_line)
+        if i == 0 or self.warning_lines[i - 1][1] != self.warning_lines[i][0]:
+          (line1, line2) = self.warning_lines[i]
+          region = self.get_region_at_line(line1, line2)
+          rows_to_write = self.view.substr(region) + "\n"
 
-        print("{}, {}".format(line1, line2))
-        print(rows_to_write)
-        
-        error_log.run_command("insert", {"characters": rows_to_write})
+          error_log.run_command("insert", {"characters": rows_to_write})
       
     # Option 2: Clear the search
     elif menu_index == 1:
@@ -111,6 +111,10 @@ class FindCsvErrorsCommand(sublime_plugin.TextCommand):
         self.menu[menu_index] +=  " " + self.read_tag # Mark visited?
 
   def get_region_at_line(self, line1, line2):
+    '''
+    Get a region from the view by line number
+    '''
+
     a = self.view.text_point(line1 - 1, 0)
     b = self.view.text_point(line2 - 1, 0)
     return self.view.line(sublime.Region(a, b))
